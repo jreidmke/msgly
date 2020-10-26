@@ -1,3 +1,5 @@
+\c msgly
+
 CREATE TABLE users (
     username text PRIMARY KEY,
     password text NOT NULL,
@@ -16,3 +18,5 @@ CREATE TABLE messages (
     sent_at timestamp with time zone NOT NULL,
     read_at timestamp with time zone
 );
+
+\dt
