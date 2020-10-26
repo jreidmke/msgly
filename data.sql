@@ -1,5 +1,8 @@
 \c msgly
 
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS messages;
+
 CREATE TABLE users (
     username text PRIMARY KEY,
     password text NOT NULL,
