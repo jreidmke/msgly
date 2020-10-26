@@ -1,10 +1,11 @@
-/** Middleware for handling req authorization for routes. */
+ /** Middleware for handling req authorization for routes. */
 
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 
 /** Middleware: Authenticate user. */
 
+//This function will run every single route. It will try to create a user, then move onto the next thing it can do (usually ensureLoggedIn). Don't think about "Rendering Pages" questions yet. We're doing this all thru JSON so no routes are hit unless you actually get/post/verb in insomnia.
 function authenticateJWT(req, res, next) {
   try {
     const tokenFromBody = req.body._token;
