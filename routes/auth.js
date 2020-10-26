@@ -57,22 +57,20 @@ router.post("/register", async(req, res, next) => {
         if(!username || !password) {
             throw new ExpressError("Username and password required", 400);
         }
+        let token = jwt.sign({username}, SECRET_KEY);
         const hashword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-
         const result = await db.query(`
-        INSERT INTO users (username, password, first_name, last_name, phone)
-        VALUES($1, $2, $3, $4, $5)
-        RETURNING username
+        INSERT INTO users (username, password, first_name, last_name, phone, join_at, last_login_at)
+        VALUES($1, $2, $3, $4, $5, current_timestamp, current_timestamp) RETURNING username
         `, [username, password, first_name, last_name, phone]);
-        return res.json[0];
+        return res.json({token});
     } catch (error) {
-        if (e.code === '23505') {
+        if (error.code === '23505') {
             return next(new ExpressError("Username taken. Please pick another!", 400));
           }
-          return next(e)
+          return next(error)
     }
-})
-
+});
 
 
 module.exports = router;
