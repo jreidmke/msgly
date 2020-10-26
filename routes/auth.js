@@ -31,6 +31,13 @@ router.post("/login", async(req, res, next) => {
     const user = result.rows[0];
     if(user) {
         if(await bcrypt.compare(password, user.password)) {
+
+            await db.query(`
+            UPDATE users
+            SET last_login_at=${Date.now()}
+            WHERE username=$1
+            `, [username]);
+
             const token = jwt.sign({ username }, SECRET_KEY);
             return res.json({ token });
         }
@@ -44,7 +51,27 @@ router.post("/login", async(req, res, next) => {
  *
  *  Make sure to update their last-login!
  */
+router.post("/register", async(req, res, next) => {
+    try {
+        const { username, password, first_name, last_name, phone } = req.body;
+        if(!username || !password) {
+            throw new ExpressError("Username and password required", 400);
+        }
+        const hashword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
+        const result = await db.query(`
+        INSERT INTO users (username, password, first_name, last_name, phone)
+        VALUES($1, $2, $3, $4, $5)
+        RETURNING username
+        `, [username, password, first_name, last_name, phone]);
+        return res.json[0];
+    } catch (error) {
+        if (e.code === '23505') {
+            return next(new ExpressError("Username taken. Please pick another!", 400));
+          }
+          return next(e)
+    }
+})
 
 
 
